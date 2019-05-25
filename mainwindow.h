@@ -26,11 +26,15 @@ private slots:
 
     void clickedGraph(QMouseEvent *event);
 
+    void clickedGraphRelease(QMouseEvent *event);
+
     void onGraph(QMouseEvent *event);
 
 private:
     Ui::MainWindow *ui;
     QVector<double> qv_x, qv_y;
+    QPoint c_point;
+    int drawing = 0;
 };
 
 #endif // MAINWINDOW_H
