@@ -9,9 +9,27 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->plot->addGraph();
     ui->plot->graph(0)->setScatterStyle(QCPScatterStyle::ssCircle);
     ui->plot->graph(0)->setLineStyle(QCPGraph::lsNone);
+    ui->plot->addGraph();
+    ui->plot->graph(1)->setScatterStyle(QCPScatterStyle::ssPeace);
+    ui->plot->graph(1)->setLineStyle(QCPGraph::lsNone);
     connect(ui->plot, SIGNAL(mousePress(QMouseEvent*)),SLOT(clickedGraph(QMouseEvent*)));
     connect(ui->plot, SIGNAL(mouseMove(QMouseEvent*)),SLOT(onGraph(QMouseEvent*)));
     connect(ui->plot, SIGNAL(mouseRelease(QMouseEvent*)),SLOT(clickedGraphRelease(QMouseEvent*)));
+    // set linear x data
+    double tmax = 30; // seconds
+    double tmin = -30; // seconds
+    double t_span = tmax - tmin;
+    int N = 100;
+    double dt = t_span / N;
+    double t;
+    for(t=tmin;t<tmax;t+=dt){
+        linear_t.append(t);
+        linear_y.append(0);
+    }
+    ui->plot->xAxis->setRange(tmin, tmax);
+    ui->plot->yAxis->setRange(-5, 5);
+    // qDebug() << dt;
+    // qDebug()<<linear_t;
 }
 
 MainWindow::~MainWindow()
@@ -36,6 +54,15 @@ void MainWindow::plot()
     ui->plot->graph(0)->setData(qv_x, qv_y);
     ui->plot->replot();
     ui->plot->update();
+}
+
+void MainWindow::update_linear_t(){
+    qDebug()<<"set lineat data";
+    qDebug()<<qv_x;
+    qDebug()<<qv_y;
+    qDebug()<<linear_t;
+    qDebug()<<linear_y;
+
 }
 
 void MainWindow::on_btn_add_clicked()
@@ -63,6 +90,12 @@ void MainWindow::clickedGraph(QMouseEvent *event)
 void MainWindow::clickedGraphRelease(QMouseEvent *event)
 {
     drawing = 0;
+    // take only the top points to make it a function
+    // interpolate the drawn line onto x axis
+    update_linear_t();
+    clearData();
+    ui->plot->graph(1)->setData(linear_t, linear_y);
+    plot();
 }
 
 
@@ -70,8 +103,8 @@ void MainWindow::onGraph(QMouseEvent *event)
 {
     c_point = event->pos();
     if (drawing == 1){
-        qDebug() << c_point.x();
-        qDebug() << c_point.y();
+        // qDebug() << c_point.x();
+        // qDebug() << c_point.y();
         addPoint(ui->plot->xAxis->pixelToCoord(c_point.x()), ui->plot->yAxis->pixelToCoord(c_point.y()));
         plot();
     }

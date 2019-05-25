@@ -18,6 +18,7 @@ public:
     void addPoint(double x, double y);
     void clearData();
     void plot();
+    void update_linear_t();
 
 private slots:
     void on_btn_add_clicked();
@@ -33,6 +34,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QVector<double> qv_x, qv_y;
+    QVector<double> linear_t, linear_y;
     QPoint c_point;
     int drawing = 0;
 };
