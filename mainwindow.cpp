@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->plot->graph(0)->setScatterStyle(QCPScatterStyle::ssCircle);
     ui->plot->graph(0)->setLineStyle(QCPGraph::lsNone);
     connect(ui->plot, SIGNAL(mousePress(QMouseEvent*)),SLOT(clickedGraph(QMouseEvent*)));
+    connect(ui->plot, SIGNAL(mouseMove(QMouseEvent*)),SLOT(onGraph(QMouseEvent*)));
 }
 
 MainWindow::~MainWindow()
@@ -52,9 +53,13 @@ void MainWindow::on_btn_clear_clicked()
 void MainWindow::clickedGraph(QMouseEvent *event)
 {
     QPoint point = event->pos();
-    qDebug()<<ui->plot->xAxis->pixelToCoord(point.x())<<ui->plot->yAxis->pixelToCoord(point.y());
+    // qDebug()<<ui->plot->xAxis->pixelToCoord(point.x())<<ui->plot->yAxis->pixelToCoord(point.y());
     addPoint(ui->plot->xAxis->pixelToCoord(point.x()), ui->plot->yAxis->pixelToCoord(point.y()));
     plot();
+}
 
 
+void MainWindow::onGraph(QMouseEvent *event)
+{
+    qDebug()<<event->pos();
 }
