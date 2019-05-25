@@ -24,6 +24,8 @@ private slots:
 
     void on_btn_clear_clicked();
 
+    void clickedGraph(QMouseEvent *event);
+
 private:
     Ui::MainWindow *ui;
     QVector<double> qv_x, qv_y;
