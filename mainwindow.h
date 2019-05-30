@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <vector>
 
 namespace Ui {
 class MainWindow;
@@ -37,6 +38,10 @@ private:
     QVector<double> linear_t, linear_y;
     QPoint c_point;
     int drawing = 0;
+    double nonlin_x[100];
+    double nonlin_y[100];
+    std::vector<double> check_vector_x;
+    std::vector<double> check_vector_y;
 };
 
 #endif // MAINWINDOW_H

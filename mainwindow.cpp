@@ -1,5 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include<gsl/gsl_interp.h>
+#include<iostream>
+#include<algorithm>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -57,11 +60,57 @@ void MainWindow::plot()
 }
 
 void MainWindow::update_linear_t(){
-    qDebug()<<"set lineat data";
-    qDebug()<<qv_x;
-    qDebug()<<qv_y;
-    qDebug()<<linear_t;
-    qDebug()<<linear_y;
+
+    qDebug()<<"set linear data";
+    // unsigned n = qv_x.length();
+
+    check_vector_x.clear();
+    check_vector_y.clear();
+    check_vector_x = qv_x.toStdVector();
+    check_vector_y = qv_y.toStdVector();
+    // make sure the x axis is only increasing
+    qDebug() << "before";
+    qDebug() << check_vector_x;
+    std::vector<double>::size_type i;
+    i = 0;
+    while(i < check_vector_x.size()-1){
+        if (check_vector_x[i] >= check_vector_x[i+1]){
+            check_vector_x.erase(check_vector_x.begin()+i+1);
+            check_vector_y.erase(check_vector_y.begin()+i+1);
+        }
+        else{
+            i++;
+        }
+    }
+    // qDebug() << "after";
+    // qDebug()<<check_vector_x;
+
+    // append the vector contents to array
+    for (i=0;i<100;i++){
+        nonlin_x[i] = check_vector_x[i];
+        nonlin_y[i] = check_vector_y[i];
+    }
+    // qDebug() << nonlin_x;
+    unsigned n = check_vector_x.size();
+    qDebug() << "n: ";
+    qDebug() << n;
+    if (n > 100){
+        n = 100;
+    }
+    qDebug() << "n: ";
+    qDebug() << n;
+
+    gsl_interp *interpolation = gsl_interp_alloc(gsl_interp_linear, n);
+    gsl_interp_init(interpolation, nonlin_x, nonlin_y, n);
+
+    gsl_interp_accel *accelerator = gsl_interp_accel_alloc();
+    double value = gsl_interp_eval(interpolation, nonlin_x, nonlin_y, 2.0, accelerator);
+
+    // double value = gsl_interp_eval(interpolation, &qv_x[0], &qv_y[0], 2.0, accelerator);
+    qDebug()<<value;
+
+    // qDebug()<<linear_t;
+    // qDebug()<<linear_y;
 
 }
 
