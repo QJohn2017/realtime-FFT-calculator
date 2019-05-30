@@ -37,9 +37,9 @@ private:
     QVector<double> qv_x, qv_y;
     QVector<double> linear_t, linear_y;
     QPoint c_point;
-    int n_draw = 10;
-    double nonlin_x[10];
-    double nonlin_y[10];
+    int n_draw = 500;
+    double nonlin_x[500];
+    double nonlin_y[500];
     int drawing = 0;
     unsigned n;
     std::vector<double> check_vector_x;
