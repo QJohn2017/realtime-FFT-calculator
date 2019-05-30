@@ -40,6 +40,7 @@ private:
     int drawing = 0;
     double nonlin_x[100];
     double nonlin_y[100];
+    unsigned n;
     std::vector<double> check_vector_x;
     std::vector<double> check_vector_y;
 };

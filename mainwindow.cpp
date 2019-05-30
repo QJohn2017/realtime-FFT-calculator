@@ -82,18 +82,20 @@ void MainWindow::update_linear_t(){
             i++;
         }
     }
-    // qDebug() << "after";
-    // qDebug()<<check_vector_x;
+    qDebug() << "after";
+    qDebug()<<check_vector_x;
 
     // append the vector contents to array
-    for (i=0;i<100;i++){
+    n = check_vector_x.size();
+    for (i=0;i<n;i++){
         nonlin_x[i] = check_vector_x[i];
         nonlin_y[i] = check_vector_y[i];
+        if (n>=100) break;
     }
     // qDebug() << nonlin_x;
-    unsigned n = check_vector_x.size();
     qDebug() << "n: ";
     qDebug() << n;
+    // the number of points cant exceed the interp array size
     if (n > 100){
         n = 100;
     }
@@ -107,7 +109,7 @@ void MainWindow::update_linear_t(){
     double value = gsl_interp_eval(interpolation, nonlin_x, nonlin_y, 2.0, accelerator);
 
     // double value = gsl_interp_eval(interpolation, &qv_x[0], &qv_y[0], 2.0, accelerator);
-    qDebug()<<value;
+    // qDebug()<<value;
 
     // qDebug()<<linear_t;
     // qDebug()<<linear_y;
