@@ -69,8 +69,8 @@ void MainWindow::update_linear_t(){
     check_vector_x = qv_x.toStdVector();
     check_vector_y = qv_y.toStdVector();
     // make sure the x axis is only increasing
-    qDebug() << "before";
-    qDebug() << check_vector_x;
+    // qDebug() << "before";
+    // qDebug() << check_vector_x;
     std::vector<double>::size_type i;
     i = 0;
     while(i < check_vector_x.size()-1){
@@ -87,26 +87,42 @@ void MainWindow::update_linear_t(){
 
     // append the vector contents to array
     n = check_vector_x.size();
+
     for (i=0;i<n;i++){
         nonlin_x[i] = check_vector_x[i];
         nonlin_y[i] = check_vector_y[i];
-        if (n>=100) break;
+        if (i>=n_draw) break;
     }
-    // qDebug() << nonlin_x;
-    qDebug() << "n: ";
-    qDebug() << n;
-    // the number of points cant exceed the interp array size
-    if (n > 100){
-        n = 100;
+    if (n > n_draw){
+        n = n_draw;
     }
-    qDebug() << "n: ";
-    qDebug() << n;
+    // set the outer points outside the interpolation axis
+    nonlin_x[0] = -31;
+    nonlin_x[n-1] = 31;
+    nonlin_y[0] = 0;
+    nonlin_y[n-1] = 0;
 
-    gsl_interp *interpolation = gsl_interp_alloc(gsl_interp_linear, n);
-    gsl_interp_init(interpolation, nonlin_x, nonlin_y, n);
+    qDebug() << "nonlinx:";
+    for(i=0;i<n_draw;i++){
+        qDebug() << nonlin_x[i];
+    }
 
-    gsl_interp_accel *accelerator = gsl_interp_accel_alloc();
-    double value = gsl_interp_eval(interpolation, nonlin_x, nonlin_y, 2.0, accelerator);
+    qDebug() << "nonliny:";
+    for(i=0;i<n_draw;i++){
+        qDebug() << nonlin_y[i];
+    }
+
+    qDebug()<<"n:";
+    qDebug()<<n;
+    qDebug()<<"interpolate this point:";
+    // for each of the linear values, get the interpolated value
+    for(i=0;i<linear_t.size();i++){
+        qDebug()<<linear_t[i];
+        gsl_interp *interpolation = gsl_interp_alloc(gsl_interp_linear, n);
+        gsl_interp_init(interpolation, nonlin_x, nonlin_y, n);
+        gsl_interp_accel *accelerator = gsl_interp_accel_alloc();
+        linear_y[i] = gsl_interp_eval(interpolation, nonlin_x, nonlin_y, linear_t[i], accelerator);
+    }
 
     // double value = gsl_interp_eval(interpolation, &qv_x[0], &qv_y[0], 2.0, accelerator);
     // qDebug()<<value;
