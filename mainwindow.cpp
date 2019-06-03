@@ -40,7 +40,9 @@ MainWindow::MainWindow(QWidget *parent) :
         linear_f.append(f_i*df);
         linear_fy.append(0);
     }
-    ui->fplot->xAxis->setRange(-100, 100);
+    // ui->fplot->xAxis->setRange(-100, 100);
+    // ui->fplot->yAxis->setRange(-5, 5);
+    ui->fplot->xAxis->setRange(linear_f[0], linear_f[linear_f.size()-1]);
     ui->fplot->yAxis->setRange(-5, 5);
     // qDebug() << dt;
     // qDebug()<<linear_t;
@@ -190,7 +192,15 @@ void MainWindow::onGraph(QMouseEvent *event)
 
 void MainWindow::on_transform_clicked()
 {
-   qDebug()<<"ft button clicked";
+    // use these to fourier transform
+    linear_t;
+    linear_y;
+
+   // qDebug()<<"ft button clicked";
+   // qDebug()<<linear_f;
+   // qDebug()<<linear_f[0];
+   // qDebug()<<linear_f[linear_f.size()-1];
+   // qDebug()<<linear_fy;
    ui->fplot->graph(0)->setData(linear_f, linear_fy);
    ui->fplot->replot();
    ui->fplot->update();
