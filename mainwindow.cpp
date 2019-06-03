@@ -15,6 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->plot->addGraph();
     ui->plot->graph(1)->setScatterStyle(QCPScatterStyle::ssPeace);
     ui->plot->graph(1)->setLineStyle(QCPGraph::lsNone);
+    ui->fplot->addGraph();
+    ui->fplot->graph(0)->setScatterStyle(QCPScatterStyle::ssCircle);
+    ui->fplot->graph(0)->setLineStyle(QCPGraph::lsNone);
     connect(ui->plot, SIGNAL(mousePress(QMouseEvent*)),SLOT(clickedGraph(QMouseEvent*)));
     connect(ui->plot, SIGNAL(mouseMove(QMouseEvent*)),SLOT(onGraph(QMouseEvent*)));
     connect(ui->plot, SIGNAL(mouseRelease(QMouseEvent*)),SLOT(clickedGraphRelease(QMouseEvent*)));
@@ -31,6 +34,14 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     ui->plot->xAxis->setRange(tmin, tmax);
     ui->plot->yAxis->setRange(-5, 5);
+    double df = (1 / (N * (2*tmax)));
+    int f_i;
+    for(f_i=-N/2;f_i<N/2;f_i++){
+        linear_f.append(f_i*df);
+        linear_fy.append(0);
+    }
+    ui->fplot->xAxis->setRange(-100, 100);
+    ui->fplot->yAxis->setRange(-5, 5);
     // qDebug() << dt;
     // qDebug()<<linear_t;
 }
@@ -175,4 +186,12 @@ void MainWindow::onGraph(QMouseEvent *event)
         addPoint(ui->plot->xAxis->pixelToCoord(c_point.x()), ui->plot->yAxis->pixelToCoord(c_point.y()));
         plot();
     }
+}
+
+void MainWindow::on_transform_clicked()
+{
+   qDebug()<<"ft button clicked";
+   ui->fplot->graph(0)->setData(linear_f, linear_fy);
+   ui->fplot->replot();
+   ui->fplot->update();
 }

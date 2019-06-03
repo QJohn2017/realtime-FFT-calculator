@@ -32,10 +32,13 @@ private slots:
 
     void onGraph(QMouseEvent *event);
 
+    void on_transform_clicked();
+
 private:
     Ui::MainWindow *ui;
     QVector<double> qv_x, qv_y;
     QVector<double> linear_t, linear_y;
+    QVector<double> linear_f, linear_fy;
     QPoint c_point;
     int n_draw = 500;
     double nonlin_x[500];
