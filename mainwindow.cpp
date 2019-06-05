@@ -140,8 +140,6 @@ void MainWindow::update_linear_t()
     check_vector_x = qv_x.toStdVector();
     check_vector_y = qv_y.toStdVector();
     // make sure the x axis is only increasing
-    // qDebug() << "before";
-    // qDebug() << check_vector_x;
     std::vector<double>::size_type i;
     i = 0;
     while(i < check_vector_x.size()-1){
@@ -195,12 +193,6 @@ void MainWindow::update_linear_t()
         linear_y[i] = gsl_interp_eval(interpolation, nonlin_x, nonlin_y, linear_t[i], accelerator);
     }
 
-    // double value = gsl_interp_eval(interpolation, &qv_x[0], &qv_y[0], 2.0, accelerator);
-    // qDebug()<<value;
-
-    // qDebug()<<linear_t;
-    // qDebug()<<linear_y;
-
 }
 
 void MainWindow::on_btn_add_clicked()
@@ -249,23 +241,6 @@ void MainWindow::onGraph(QMouseEvent *event)
 
 void MainWindow::on_transform_clicked()
 {
-    // use these to fourier transform
-    linear_t;
-    linear_y;
-    // std::cout << linear_y[0]  << std::endl;
-    // std::cout << "linear y:" << std::endl;
-    // qDebug() << linear_y.toStdVector();
-    // std::cout << "linear_t" << std::endl;
-    // qDebug() << linear_t.toStdVector();
-    // qDebug()<<"ft button clicked";
-    // qDebug()<<linear_f;
-    // qDebug()<<linear_f[0];
-    // qDebug()<<linear_f[linear_f.size()-1];
-    // qDebug()<<linear_fy;
-
-    // define complex array of length 8
-    // complex vector of length 128
-
     double x[2*128];
     int i = 0;
     for(i=0;i<128;i++){
@@ -273,17 +248,11 @@ void MainWindow::on_transform_clicked()
       IMAG(x, i) = 0;
     }
 
-    // REAL(x, 0) = 2;
-    // IMAG(x, 0) = 5;
-    // REAL(x, 2) = 2;
-    // IMAG(x, 2) = 5;
-
     // printarray(x);
     complex_array_to_file(x, 128);
     shift_arr(x, 2*128);
     gsl_fft_complex_radix2_forward(x, 1, 128);
     shift_arr(x, 2*128);
-
 
     for (i=0;i<linear_f.size();i++){
       linear_fy[i] = REAL(x,i);
