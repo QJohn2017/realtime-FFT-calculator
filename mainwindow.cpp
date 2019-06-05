@@ -1,8 +1,47 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include<gsl/gsl_interp.h>
+#include<gsl/gsl_complex.h>
+#include<gsl/gsl_vector_complex.h>
+#include<gsl/gsl_vector_complex_double.h>
+#include<gsl/gsl_fft_complex.h>
 #include<iostream>
 #include<algorithm>
+#define REAL(z,i) ((z)[2*(i)])
+#define IMAG(z,i) ((z)[2*(i)+1])
+
+
+void printarray(double *arr){
+  int i;
+  // print the array
+  std::cout << "shifting " << std::endl;
+  std::cout << "REAL:" << std::endl;
+  for(i=0;i<8;i++){
+    std::cout << REAL(arr, i)<< ", ";
+  }
+  std::cout << std::endl;
+  std::cout << "IMAG:" << std::endl;
+  for(i=0;i<8;i++){
+    std::cout << IMAG(arr, i)<< ", ";
+  }
+  std::cout << std::endl;
+}
+
+
+
+void shift_arr(double *arr, int arrsize){
+  double tmparr[arrsize];
+  int i;
+  for(i=0;i<arrsize/2;i++){
+    tmparr[i] = arr[i+(arrsize/2)];
+  }
+  for(i=arrsize/2;i<arrsize;i++){
+    tmparr[i] = arr[i-(arrsize/2)];
+  }
+  for(i=0;i<arrsize;i++){
+    arr[i] = tmparr[i];
+  }
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -195,13 +234,36 @@ void MainWindow::on_transform_clicked()
     // use these to fourier transform
     linear_t;
     linear_y;
+    // std::cout << linear_y[0]  << std::endl;
+    // std::cout << "linear y:" << std::endl;
+    // qDebug() << linear_y.toStdVector();
+    // std::cout << "linear_t" << std::endl;
+    // qDebug() << linear_t.toStdVector();
+    // qDebug()<<"ft button clicked";
+    // qDebug()<<linear_f;
+    // qDebug()<<linear_f[0];
+    // qDebug()<<linear_f[linear_f.size()-1];
+    // qDebug()<<linear_fy;
 
-   // qDebug()<<"ft button clicked";
-   // qDebug()<<linear_f;
-   // qDebug()<<linear_f[0];
-   // qDebug()<<linear_f[linear_f.size()-1];
-   // qDebug()<<linear_fy;
-   ui->fplot->graph(0)->setData(linear_f, linear_fy);
-   ui->fplot->replot();
-   ui->fplot->update();
+    // define complex array of length 8
+    double x[16];
+    int i = 0;
+    for(i=0;i<16;i++){
+      x[i] = 0;
+    }
+    REAL(x, 0) = 2;
+    IMAG(x, 0) = 5;
+    REAL(x, 2) = 2;
+    IMAG(x, 2) = 5;
+    std::cout << "before shifting" << std::endl;
+    printarray(x);
+    shift_arr(x, 2*8);
+    gsl_fft_complex_radix2_forward(x, 1, 8);
+    shift_arr(x, 2*8);
+    std::cout << "after shifting" << std::endl;
+    printarray(x);
+
+    ui->fplot->graph(0)->setData(linear_f, linear_fy);
+    ui->fplot->replot();
+    ui->fplot->update();
 }
