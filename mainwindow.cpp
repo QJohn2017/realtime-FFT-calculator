@@ -7,11 +7,30 @@
 #include<gsl/gsl_fft_complex.h>
 #include<iostream>
 #include<algorithm>
+#include<fstream>
 #define REAL(z,i) ((z)[2*(i)])
 #define IMAG(z,i) ((z)[2*(i)+1])
 
 
-void printarray(double *arr){
+void complex_array_to_file(double *arr, int arrsize)
+{
+  std::ofstream myfile ("array.txt");
+  int i;
+  myfile<<"real\timag\n";
+  for(i=0;i<arrsize;i++){
+    // std::cout<<"real:"<<REAL(arr, i)<<"imag:"<<IMAG(arr, i)<<std::endl;
+    myfile<<REAL(arr, i);
+    myfile<<"\t";
+    myfile<<IMAG(arr, i);
+    myfile<<"\n";
+  }
+  myfile.close();
+
+}
+
+
+void printarray(double *arr)
+{
   int i;
   // print the array
   std::cout << "shifting " << std::endl;
@@ -27,9 +46,8 @@ void printarray(double *arr){
   std::cout << std::endl;
 }
 
-
-
-void shift_arr(double *arr, int arrsize){
+void shift_arr(double *arr, int arrsize)
+{
   double tmparr[arrsize];
   int i;
   for(i=0;i<arrsize/2;i++){
@@ -64,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
     double tmax = 30; // seconds
     double tmin = -30; // seconds
     double t_span = tmax - tmin;
-    int N = 100;
+    int N = 128;
     double dt = t_span / N;
     double t;
     for(t=tmin;t<tmax;t+=dt){
@@ -79,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent) :
         linear_f.append(f_i*df);
         linear_fy.append(0);
     }
-    // ui->fplot->xAxis->setRange(-100, 100);
+    // ui->fplot->xAxis->setRange(-128, 128);
     // ui->fplot->yAxis->setRange(-5, 5);
     ui->fplot->xAxis->setRange(linear_f[0], linear_f[linear_f.size()-1]);
     ui->fplot->yAxis->setRange(-5, 5);
@@ -111,7 +129,8 @@ void MainWindow::plot()
     ui->plot->update();
 }
 
-void MainWindow::update_linear_t(){
+void MainWindow::update_linear_t()
+{
 
     qDebug()<<"set linear data";
     // unsigned n = qv_x.length();
@@ -217,7 +236,6 @@ void MainWindow::clickedGraphRelease(QMouseEvent *event)
     plot();
 }
 
-
 void MainWindow::onGraph(QMouseEvent *event)
 {
     c_point = event->pos();
@@ -246,22 +264,30 @@ void MainWindow::on_transform_clicked()
     // qDebug()<<linear_fy;
 
     // define complex array of length 8
-    double x[16];
+    // complex vector of length 128
+
+    double x[2*128];
     int i = 0;
-    for(i=0;i<16;i++){
-      x[i] = 0;
+    for(i=0;i<128;i++){
+      REAL(x, i) = linear_y[i];
+      IMAG(x, i) = 0;
     }
-    REAL(x, 0) = 2;
-    IMAG(x, 0) = 5;
-    REAL(x, 2) = 2;
-    IMAG(x, 2) = 5;
-    std::cout << "before shifting" << std::endl;
-    printarray(x);
-    shift_arr(x, 2*8);
-    gsl_fft_complex_radix2_forward(x, 1, 8);
-    shift_arr(x, 2*8);
-    std::cout << "after shifting" << std::endl;
-    printarray(x);
+
+    // REAL(x, 0) = 2;
+    // IMAG(x, 0) = 5;
+    // REAL(x, 2) = 2;
+    // IMAG(x, 2) = 5;
+
+    // printarray(x);
+    complex_array_to_file(x, 128);
+    shift_arr(x, 2*128);
+    gsl_fft_complex_radix2_forward(x, 1, 128);
+    shift_arr(x, 2*128);
+
+
+    for (i=0;i<linear_f.size();i++){
+      linear_fy[i] = REAL(x,i);
+    }
 
     ui->fplot->graph(0)->setData(linear_f, linear_fy);
     ui->fplot->replot();
